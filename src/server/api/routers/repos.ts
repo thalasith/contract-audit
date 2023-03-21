@@ -25,7 +25,7 @@ export const reposRouter = createTRPCRouter({
     }),
 
   getRepos: protectedProcedure.query(async ({ ctx }) => {
-    const accountId = ctx.session?.user.id as string;
+    const accountId = ctx.session?.user.id;
 
     if (!accountId) {
       throw new Error("User not authenticated");
@@ -59,7 +59,7 @@ export const reposRouter = createTRPCRouter({
   }),
 
   getFile: protectedProcedure.query(async ({ ctx }) => {
-    const accountId = ctx.session?.user.id as string;
+    const accountId = ctx.session?.user.id;
 
     if (!accountId) {
       throw new Error("User not authenticated");
@@ -86,12 +86,12 @@ export const reposRouter = createTRPCRouter({
       throw new Error("Path does not point to a file");
     }
 
-    const fileContentBase64 = response.data.content as string;
+    const fileContentBase64 = response.data.content;
     const fileContent = Buffer.from(fileContentBase64, "base64").toString(
       "utf8"
     );
 
-    const openai = new OpenAI.OpenAIApi(configuration);
+    // const openai = new OpenAI.OpenAIApi(configuration);
 
     // try {
     //   const completion = await openai.createChatCompletion({
