@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { Octokit } from "@octokit/rest";
 
 import {
   createTRPCRouter,

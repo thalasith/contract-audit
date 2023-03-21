@@ -3,7 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 
 import { api } from "~/utils/api";
-import { RepoData } from "~/interfaces";
+import type { RepoData } from "~/interfaces";
 
 const Repos: NextPage = () => {
   //   const { data: sessionData } = useSession();

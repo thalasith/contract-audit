@@ -3,7 +3,7 @@ import { Octokit } from "@octokit/rest";
 import { Buffer } from "buffer";
 import { env } from "~/env.mjs";
 import * as OpenAI from "openai";
-import { RepoData } from "~/interfaces";
+import type { RepoData } from "~/interfaces";
 
 import {
   createTRPCRouter,
