@@ -3,6 +3,7 @@ import { Octokit } from "@octokit/rest";
 import { Buffer } from "buffer";
 import { env } from "~/env.mjs";
 import * as OpenAI from "openai";
+import { RepoData } from "~/interfaces";
 
 import {
   createTRPCRouter,
@@ -22,6 +23,40 @@ export const reposRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       };
     }),
+
+  getRepos: protectedProcedure.query(async ({ ctx }) => {
+    const accountId = ctx.session?.user.id as string;
+
+    if (!accountId) {
+      throw new Error("User not authenticated");
+    }
+
+    const user = await ctx.prisma.account.findMany({
+      where: { userId: accountId },
+    });
+
+    const access_token = user[0]?.access_token;
+    const octokit = new Octokit({
+      auth: access_token, // Replace with your access token or use an environment variable
+    });
+
+    const response = await octokit.rest.repos.listForAuthenticatedUser();
+    const returnData = [] as RepoData[];
+    response.data.forEach((repo) => {
+      const dummyData = repo.full_name.split("/");
+      const data = {
+        id: repo.id,
+        name: repo.name,
+        owner: dummyData[0],
+        repoName: dummyData[1],
+        homePage: repo.homepage,
+        github_link: repo.html_url,
+      } as RepoData;
+      returnData.push(data);
+    });
+
+    return returnData;
+  }),
 
   getFile: protectedProcedure.query(async ({ ctx }) => {
     const accountId = ctx.session?.user.id as string;

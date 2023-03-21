@@ -65,7 +65,6 @@ const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
   // get all data from example
   const { data: exampleData } = api.example.getAll.useQuery();
-  const { data: repoData } = api.repos.getFile.useQuery();
 
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input
