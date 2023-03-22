@@ -11,9 +11,9 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 
-const configuration = new OpenAI.Configuration({
-  apiKey: env.OPEN_API_KEY,
-});
+// const configuration = new OpenAI.Configuration({
+//   apiKey: env.OPEN_API_KEY,
+// });
 
 export const reposRouter = createTRPCRouter({
   repos: publicProcedure
