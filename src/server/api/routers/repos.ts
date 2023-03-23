@@ -3,7 +3,7 @@ import { Octokit } from "@octokit/rest";
 import { Buffer } from "buffer";
 import { env } from "~/env.mjs";
 import * as OpenAI from "openai";
-import type { RepoData } from "~/interfaces";
+import type { RepoData, gitHubData } from "~/interfaces";
 
 import {
   createTRPCRouter,
@@ -23,7 +23,43 @@ export const reposRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       };
     }),
+  getRepoFiles: protectedProcedure
+    .input(z.object({ username: z.string(), repoName: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const accountId = ctx.session?.user.id;
 
+      if (!accountId) {
+        throw new Error("User not authenticated");
+      }
+
+      const user = await ctx.prisma.account.findMany({
+        where: { userId: accountId },
+      });
+
+      const access_token = user[0]?.access_token;
+      const octokit = new Octokit({
+        auth: access_token, // Replace with your access token or use an environment variable
+      });
+
+      const { data: rawData } = await octokit.rest.repos.getContent({
+        owner: input.username,
+        repo: input.repoName,
+        path: "",
+      });
+
+      const data = (rawData as gitHubData[]) || [];
+      const files = data
+        .filter((item) => item.type === "file")
+        .map((file) => file.path);
+      const folders = data
+        .filter((item) => item.type === "dir")
+        .map((folder) => folder.path);
+
+      return {
+        files,
+        folders,
+      };
+    }),
   getRepos: protectedProcedure.query(async ({ ctx }) => {
     const accountId = ctx.session?.user.id;
 

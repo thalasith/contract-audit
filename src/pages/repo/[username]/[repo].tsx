@@ -18,12 +18,12 @@ const Repo: NextPage = () => {
       setLoading(false);
     }
   }, [router]);
-  // const { data: repoData } = api.repos.getRepoFiles.useQuery({
-  //   username: username as string,
-  //   repoName: repo as string,
-  // });
+  const { data: repoData } = api.repos.getRepoFiles.useQuery({
+    username: username as string,
+    repoName: repo as string,
+  });
 
-  // console.log(repoData);
+  console.log(repoData);
 
   return (
     <>
