@@ -23,8 +23,8 @@ const Repo: NextPage = () => {
     }
   }, [router]);
   const { data: repoData } = api.repos.getRepoFiles.useQuery({
-    username: username as string,
-    repoName: repo as string,
+    username: username,
+    repoName: repo,
   });
 
   console.log(repoData);
