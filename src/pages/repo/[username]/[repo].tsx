@@ -1,10 +1,29 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { api } from "~/utils/api";
 
 const Repo: NextPage = () => {
   const router = useRouter();
-  const { username, repo } = router.query;
+  const [username, setUserName] = useState<string>("");
+  const [repo, setRepo] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setLoading(true);
+    if (router.isReady) {
+      setUserName(router.query.username as string);
+      setRepo(router.query.repo as string);
+      setLoading(false);
+    }
+  }, [router]);
+  const { data: repoData } = api.repos.getRepoFiles.useQuery({
+    username: username as string,
+    repoName: repo as string,
+  });
+
+  console.log(repoData);
 
   return (
     <>
