@@ -23,36 +23,7 @@ export const reposRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       };
     }),
-  getRepoFiles: protectedProcedure
-    .input(z.object({ username: z.string(), repoName: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const accountId = ctx.session?.user.id;
 
-      if (!accountId) {
-        throw new Error("User not authenticated");
-      }
-
-      const user = await ctx.prisma.account.findMany({
-        where: { userId: accountId },
-      });
-
-      const access_token = user[0]?.access_token;
-      const octokit = new Octokit({
-        auth: access_token, // Replace with your access token or use an environment variable
-      });
-
-      const { data } = await octokit.rest.repos.getContent({
-        owner: input.username,
-        repo: input.repoName,
-        path: "",
-      });
-
-      // const directories = Array(data).filter((item) => item.type === "dir").map((dir) => dir.path);
-
-      return {
-        greeting: `Hello ${input.username} here is your repo ${input.repoName}`,
-      };
-    }),
   getRepos: protectedProcedure.query(async ({ ctx }) => {
     const accountId = ctx.session?.user.id;
 
