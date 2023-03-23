@@ -13,8 +13,12 @@ const Repo: NextPage = () => {
   useEffect(() => {
     setLoading(true);
     if (router.isReady) {
-      setUserName(router.query.username as string);
-      setRepo(router.query.repo as string);
+      if (typeof router.query.username === "string") {
+        setUserName(router.query.username);
+      }
+      if (typeof router.query.repo === "string") {
+        setRepo(router.query.repo);
+      }
       setLoading(false);
     }
   }, [router]);
