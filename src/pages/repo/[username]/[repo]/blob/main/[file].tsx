@@ -14,11 +14,16 @@ const DynamicSyntaxHighlighter = dynamic(
     const { docco } = await import(
       "react-syntax-highlighter/dist/esm/styles/hljs"
     );
-    return ({ children, ...props }: SyntaxHighlighterProps) => (
+    const DynamicComponent = ({
+      children,
+      ...props
+    }: SyntaxHighlighterProps) => (
       <SyntaxHighlighter {...props} style={docco}>
         {children}
       </SyntaxHighlighter>
     );
+    DynamicComponent.displayName = "DynamicSyntaxHighlighter";
+    return DynamicComponent;
   },
   {
     ssr: false,
