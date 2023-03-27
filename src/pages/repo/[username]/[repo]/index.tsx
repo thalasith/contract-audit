@@ -14,6 +14,7 @@ const Repo: NextPage = () => {
   const { data: repoData, isSuccess } = api.repos.getRepoFiles.useQuery({
     username: username,
     repoName: repo,
+    path: "contract",
   });
   useEffect(() => {
     if (router.isReady) {

@@ -24,7 +24,13 @@ export const reposRouter = createTRPCRouter({
       };
     }),
   getRepoFiles: protectedProcedure
-    .input(z.object({ username: z.string(), repoName: z.string() }))
+    .input(
+      z.object({
+        username: z.string(),
+        repoName: z.string(),
+        path: z.string().optional(),
+      })
+    )
     .query(async ({ ctx, input }) => {
       const accountId = ctx.session?.user.id;
 
@@ -44,22 +50,30 @@ export const reposRouter = createTRPCRouter({
       const { data: rawData } = await octokit.rest.repos.getContent({
         owner: input.username,
         repo: input.repoName,
-        path: "",
+        path: input.path || "",
       });
 
       const data = (rawData as gitHubData[]) || [];
+
+      const removePathPrefix = (itemPath: string): string => {
+        const pathPrefix = input.path ? `${input.path}/` : "";
+        return itemPath.replace(pathPrefix, "");
+      };
+
       const files = data
-        .filter((item) => item.type === "file")
-        .map((file) => file.path);
+        .filter((item: gitHubData) => item.type === "file")
+        .map((file: gitHubData) => removePathPrefix(file.path));
+
       const folders = data
-        .filter((item) => item.type === "dir")
-        .map((folder) => folder.path);
+        .filter((item: gitHubData) => item.type === "dir")
+        .map((folder: gitHubData) => removePathPrefix(folder.path));
 
       return {
         files,
         folders,
       };
     }),
+
   getRepos: protectedProcedure.query(async ({ ctx }) => {
     const accountId = ctx.session?.user.id;
 
