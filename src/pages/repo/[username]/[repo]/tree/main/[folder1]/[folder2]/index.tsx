@@ -4,23 +4,27 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { FaFolder, FaRegFile } from "react-icons/fa";
-import Link from "next/link";
 
-const Repo: NextPage = () => {
+const Folder2: NextPage = () => {
   const router = useRouter();
   const [username, setUserName] = useState<string>("");
   const [repo, setRepo] = useState<string>("");
+  const [folder1, setFolder1] = useState<string>("");
+  const [folder2, setFolder2] = useState<string>("");
   const [files, setFiles] = useState<string[]>([]);
   const [folders, setFolders] = useState<string[]>([]);
   const { data: repoData, isSuccess } = api.repos.getRepoFiles.useQuery({
     username: username,
     repoName: repo,
+    path: `${folder1}/${folder2}`,
   });
 
   useEffect(() => {
     if (router.isReady) {
       setUserName((router.query.username || "")?.toString());
       setRepo((router.query.repo || "")?.toString());
+      setFolder1((router.query.folder1 || "")?.toString());
+      setFolder2((router.query.folder2 || "")?.toString());
     }
 
     if (isSuccess) {
@@ -39,23 +43,22 @@ const Repo: NextPage = () => {
       <main className="text-grey-500 flex min-h-screen flex-col items-center justify-center text-gray-800">
         <div className="container flex flex-col items-center justify-center gap-2 px-4 py-16">
           <h1>
-            Viewing {username} / {repo}
+            Viewing {username} / {repo} / {folder1} / {folder2}
           </h1>
           <div className="w-full rounded border-b border-gray-400">
             <div className=" flex border-x border-t border-gray-400 bg-gray-500 py-1 pl-2 text-white">
               {" "}
-              Viewing {username} / {repo}
+              Viewing {username} / {repo} / {folder1} / {folder2}
             </div>
             {folders.map((folder) => {
               return (
-                <Link
+                <div
                   key={folder}
                   className=" flex border-x border-t border-gray-400 bg-gray-200 py-1"
-                  href={`/repo/${username}/${repo}/tree/main/${folder}`}
                 >
                   <FaFolder className="mx-2 mt-1 text-gray-700" />
                   {folder}
-                </Link>
+                </div>
               );
             })}
             {files.map((file) => {
@@ -76,4 +79,4 @@ const Repo: NextPage = () => {
   );
 };
 
-export default Repo;
+export default Folder2;

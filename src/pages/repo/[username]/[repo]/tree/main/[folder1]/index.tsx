@@ -6,21 +6,24 @@ import { api } from "~/utils/api";
 import { FaFolder, FaRegFile } from "react-icons/fa";
 import Link from "next/link";
 
-const Repo: NextPage = () => {
+const Folder1: NextPage = () => {
   const router = useRouter();
   const [username, setUserName] = useState<string>("");
   const [repo, setRepo] = useState<string>("");
+  const [folder1, setFolder1] = useState<string>("");
   const [files, setFiles] = useState<string[]>([]);
   const [folders, setFolders] = useState<string[]>([]);
   const { data: repoData, isSuccess } = api.repos.getRepoFiles.useQuery({
     username: username,
     repoName: repo,
+    path: folder1,
   });
 
   useEffect(() => {
     if (router.isReady) {
       setUserName((router.query.username || "")?.toString());
       setRepo((router.query.repo || "")?.toString());
+      setFolder1((router.query.folder1 || "")?.toString());
     }
 
     if (isSuccess) {
@@ -51,7 +54,7 @@ const Repo: NextPage = () => {
                 <Link
                   key={folder}
                   className=" flex border-x border-t border-gray-400 bg-gray-200 py-1"
-                  href={`/repo/${username}/${repo}/tree/main/${folder}`}
+                  href={`/repo/${username}/${repo}/tree/main/${folder1}/${folder}`}
                 >
                   <FaFolder className="mx-2 mt-1 text-gray-700" />
                   {folder}
@@ -76,4 +79,4 @@ const Repo: NextPage = () => {
   );
 };
 
-export default Repo;
+export default Folder1;
