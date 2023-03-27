@@ -3,9 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
-// import react-syntax-highlighter
-import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const File: NextPage = () => {
   const router = useRouter();
@@ -47,11 +44,7 @@ const File: NextPage = () => {
               {" "}
               Viewing {username} / {repo} / {fileName}
             </div>
-            <div>
-              <SyntaxHighlighter language="javascript" style={docco}>
-                {file}
-              </SyntaxHighlighter>
-            </div>
+            <div>{file}</div>
           </div>
         </div>
       </main>
