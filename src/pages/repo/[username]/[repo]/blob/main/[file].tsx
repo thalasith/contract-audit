@@ -1,8 +1,29 @@
 import { type NextPage } from "next";
 import Head from "next/head";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, CSSProperties } from "react";
+import { SyntaxHighlighterProps } from "react-syntax-highlighter";
 import { api } from "~/utils/api";
+
+const DynamicSyntaxHighlighter = dynamic(
+  async () => {
+    const { Light: SyntaxHighlighter } = await import(
+      "react-syntax-highlighter"
+    );
+    const { docco } = await import(
+      "react-syntax-highlighter/dist/esm/styles/hljs"
+    );
+    return ({ children, ...props }: SyntaxHighlighterProps) => (
+      <SyntaxHighlighter {...props} style={docco}>
+        {children}
+      </SyntaxHighlighter>
+    );
+  },
+  {
+    ssr: false,
+  }
+);
 
 const File: NextPage = () => {
   const router = useRouter();
@@ -44,7 +65,12 @@ const File: NextPage = () => {
               {" "}
               Viewing {username} / {repo} / {fileName}
             </div>
-            <div>{file}</div>
+            <div>
+              {" "}
+              <DynamicSyntaxHighlighter language="javascript">
+                {file}
+              </DynamicSyntaxHighlighter>
+            </div>
           </div>
         </div>
       </main>
