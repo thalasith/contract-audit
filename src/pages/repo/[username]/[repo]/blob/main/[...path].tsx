@@ -34,18 +34,23 @@ const File: NextPage = () => {
   const router = useRouter();
   const [username, setUserName] = useState<string>("");
   const [repo, setRepo] = useState<string>("");
-  const [fileName, setFileName] = useState<string>("");
+  const [path, setPath] = useState<string>("");
   const [file, setFile] = useState<string>("");
   const { data: fileData, isSuccess } = api.repos.getFile.useQuery({
     username: username,
     repoName: repo,
-    path: fileName,
+    path: "/" + path,
   });
+
   useEffect(() => {
     if (router.isReady) {
       setUserName((router.query.username || "")?.toString());
       setRepo((router.query.repo || "")?.toString());
-      setFileName((router.query.file || "")?.toString());
+      if (Array.isArray(router.query.path)) {
+        setPath(router.query.path.join("/"));
+      } else {
+        setPath(router.query.path || "");
+      }
     }
 
     if (isSuccess) {
@@ -63,12 +68,12 @@ const File: NextPage = () => {
       <main className="text-grey-500 flex min-h-screen flex-col items-center justify-center text-gray-800">
         <div className="container flex flex-col items-center justify-center gap-2 px-4 py-16">
           <h1>
-            Viewing {username} / {repo} / {fileName}
+            Viewing {username} / {repo} / {path}
           </h1>
           <div className="w-full rounded border-b border-gray-400">
             <div className=" flex border-x border-t border-gray-400 bg-gray-500 py-1 pl-2 text-white">
               {" "}
-              Viewing {username} / {repo} / {fileName}
+              Viewing {username} / {repo} / {path}
             </div>
             <div>
               {" "}

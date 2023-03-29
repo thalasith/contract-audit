@@ -131,6 +131,7 @@ export const reposRouter = createTRPCRouter({
       const octokit = new Octokit({
         auth: access_token, // Replace with your access token or use an environment variable
       });
+      console.log(input.path);
 
       const response = await octokit.rest.repos.getContent({
         owner: input.username,
