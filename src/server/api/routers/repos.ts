@@ -11,9 +11,9 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 
-// const configuration = new OpenAI.Configuration({
-//   apiKey: env.OPEN_API_KEY,
-// });
+const configuration = new OpenAI.Configuration({
+  apiKey: env.OPEN_API_KEY,
+});
 
 export const reposRouter = createTRPCRouter({
   hello: publicProcedure
@@ -147,23 +147,44 @@ export const reposRouter = createTRPCRouter({
       const fileContent = Buffer.from(fileContentBase64, "base64").toString(
         "utf8"
       );
-
-      // const openai = new OpenAI.OpenAIApi(configuration);
-
-      // try {
-      //   const completion = await openai.createChatCompletion({
-      //     model: "gpt-3.5-turbo",
-      //     messages: [
-      //       {
-      //         role: "user",
-      //         content: `Tell A bit of context, this is a smart contract within the Near Protocol. Tell me everything that is wrong with the below code from a security perspective and how somebody can exploit each issue.  \n\n${fileContent}'`,
-      //       },
-      //     ],
-      //   });
-
-      // } catch (e) {
-      //   console.log(e);
-      // }
       return fileContent;
+    }),
+  getOpenAIPrompt: protectedProcedure
+    .input(
+      z.object({
+        repoFile: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      if (input.repoFile === "") {
+        return "";
+      }
+      const openai = new OpenAI.OpenAIApi(configuration);
+
+      try {
+        const completion = await openai.createChatCompletion({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "user",
+              content: `Give me a prompt that says "Hi developer, I am chatgpt and I am here to help you!"`,
+            },
+          ],
+        });
+        if (
+          completion.data &&
+          completion.data.choices &&
+          completion.data.choices[0] &&
+          completion.data.choices[0].message &&
+          completion.data.choices[0].message.content
+        ) {
+          return completion.data.choices[0].message.content;
+        } else {
+          return "No text found in response";
+        }
+      } catch (e) {
+        console.log(e);
+      }
+      return "testing!";
     }),
 });
