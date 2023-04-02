@@ -64,7 +64,9 @@ const File: NextPage = () => {
   });
   const handleClick = () => {
     setRepoFile("testing repofile");
-    openAIPrompt.refetch();
+    openAIPrompt.refetch().catch((err) => {
+      console.log(err);
+    });
   };
 
   return (
