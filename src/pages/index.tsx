@@ -72,6 +72,7 @@ const AuthShowcase: React.FC = () => {
               <Link
                 className="my-1 bg-gray-500 px-2 text-white"
                 href={`/repo/thalasith/${repo.repoName}`}
+                key={repo.repoName}
               >
                 {repo.name}
               </Link>
