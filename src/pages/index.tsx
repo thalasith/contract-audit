@@ -68,11 +68,10 @@ const AuthShowcase: React.FC = () => {
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
         {repoData?.map((repo) => {
           return (
-            <div>
+            <div key={repo.repoName}>
               <Link
                 className="my-1 bg-gray-500 px-2 text-white"
                 href={`/repo/thalasith/${repo.repoName}`}
-                key={repo.repoName}
               >
                 {repo.name}
               </Link>
