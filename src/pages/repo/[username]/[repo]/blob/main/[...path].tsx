@@ -60,10 +60,12 @@ const File: NextPage = () => {
   }, [router, fileData, isSuccess]);
 
   const openAIPrompt = api.repos.getOpenAIPrompt.useQuery({
-    repoFile: repoFile,
+    username: username,
+    repoName: repo,
+    path: "/" + path,
   });
-  const handleClick = () => {
-    setRepoFile("testing repofile");
+  const handleClick = async () => {
+    setRepoFile(file);
     openAIPrompt.refetch().catch((err) => {
       console.log(err);
     });
@@ -80,10 +82,11 @@ const File: NextPage = () => {
         <div className="container flex flex-col items-center justify-center gap-2 px-4 py-16">
           <button
             className="bg-gray-400 hover:bg-gray-600"
-            onClick={handleClick}
+            onClick={() => handleClick()}
           >
-            Click me to test!
+            Click me to Run ChatGPT!
           </button>
+          {openAIPrompt.data && <div>{openAIPrompt.data}</div>}4
           <h1>
             Viewing {username} / {repo} / {path}
           </h1>

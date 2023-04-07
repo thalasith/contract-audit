@@ -131,7 +131,6 @@ export const reposRouter = createTRPCRouter({
       const octokit = new Octokit({
         auth: access_token, // Replace with your access token or use an environment variable
       });
-      console.log(input.path);
 
       const response = await octokit.rest.repos.getContent({
         owner: input.username,
@@ -152,13 +151,44 @@ export const reposRouter = createTRPCRouter({
   getOpenAIPrompt: protectedProcedure
     .input(
       z.object({
-        repoFile: z.string(),
+        username: z.string(),
+        repoName: z.string(),
+        path: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      if (input.repoFile === "") {
-        return "";
+      const accountId = ctx.session?.user.id;
+
+      if (!accountId) {
+        throw new Error("User not authenticated");
       }
+
+      const user = await ctx.prisma.account.findMany({
+        where: { userId: accountId },
+      });
+
+      const access_token = user[0]?.access_token;
+      const octokit = new Octokit({
+        auth: access_token, // Replace with your access token or use an environment variable
+      });
+
+      const response = await octokit.rest.repos.getContent({
+        owner: input.username,
+        repo: input.repoName,
+        path: input.path || "",
+      });
+
+      if (Array.isArray(response.data) || response.data.type !== "file") {
+        throw new Error("Path does not point to a file");
+      }
+
+      const fileContentBase64 = response.data.content;
+      const fileContent = Buffer.from(fileContentBase64, "base64").toString(
+        "utf8"
+      );
+
+      console.log(fileContent);
+
       const openai = new OpenAI.OpenAIApi(configuration);
 
       try {
@@ -167,7 +197,7 @@ export const reposRouter = createTRPCRouter({
           messages: [
             {
               role: "user",
-              content: `Give me a prompt that says "Hi developer, I am chatgpt and I am here to help you!"`,
+              content: `tell me everything that is wrong from a security standpoint about ${fileContent} which is a smart contract on the near protocol`,
             },
           ],
         });
