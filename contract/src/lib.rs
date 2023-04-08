@@ -57,28 +57,26 @@ impl Contract {
 
         let mut audits = self
             .accounts
-            .get(&env::current_account_id())
+            .get(&env::signer_account_id())
             .unwrap_or_default();
 
         audits.push(audit);
         log!("audits: {:?}", audits);
 
         // insert the updated list of audits into the unordered map if the account exists
-        self.accounts.insert(&env::current_account_id(), &audits);
+        self.accounts.insert(&env::signer_account_id(), &audits);
     }
 
     pub fn get_audit(&self, id: u64) -> Option<Audit> {
         let audits = self
             .accounts
-            .get(&env::predecessor_account_id())
+            .get(&env::signer_account_id())
             .unwrap_or_default();
         audits.into_iter().find(|audit| audit.id == id)
     }
 
-    pub fn get_audits_by_account(&self) -> Vec<Audit> {
-        log!("Current account id: {}", env::current_account_id());
-        self.accounts
-            .get(&env::current_account_id())
-            .unwrap_or_default()
+    pub fn get_audits_by_account(&self, account_id: AccountId) -> Vec<Audit> {
+        log!("Current account id: {}");
+        self.accounts.get(&account_id).unwrap_or_default()
     }
 }

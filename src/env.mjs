@@ -22,6 +22,8 @@ const server = z.object({
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
   OPEN_API_KEY: z.string(),
+  FUNDING_ACCOUNT_ID: z.string(),
+  FUNDING_ACOUNT_PRIVATE_KEY: z.string(),
 });
 
 /**
@@ -46,6 +48,8 @@ const processEnv = {
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
   OPEN_API_KEY: process.env.OPEN_API_KEY,
+  FUNDING_ACCOUNT_ID: process.env.FUNDING_ACCOUNT_ID,
+  FUNDING_ACOUNT_PRIVATE_KEY: process.env.FUNDING_ACOUNT_PRIVATE_KEY,
 
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
