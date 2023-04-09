@@ -5,11 +5,7 @@ import { env } from "~/env.mjs";
 import * as OpenAI from "openai";
 import type { RepoData, gitHubData } from "~/interfaces";
 
-import {
-  createTRPCRouter,
-  publicProcedure,
-  protectedProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 const configuration = new OpenAI.Configuration({
   apiKey: env.OPEN_API_KEY,
@@ -179,8 +175,6 @@ export const reposRouter = createTRPCRouter({
       const fileContent = Buffer.from(fileContentBase64, "base64").toString(
         "utf8"
       );
-
-      console.log(fileContent);
 
       const openai = new OpenAI.OpenAIApi(configuration);
 

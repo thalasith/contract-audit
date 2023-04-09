@@ -61,7 +61,16 @@ const File: NextPage = () => {
     }
   }, [router, fileData, isSuccess]);
 
-  const openAIPrompt = api.repos.getOpenAIPrompt.useQuery(
+  // const openAIPrompt = api.repos.getOpenAIPrompt.useQuery(
+  //   {
+  //     username: username,
+  //     repoName: repo,
+  //     path: "/" + path,
+  //   },
+  //   { enabled: false }
+  // );
+
+  const keyPomPrompt = api.keypom.createAudit.useQuery(
     {
       username: username,
       repoName: repo,
@@ -70,25 +79,12 @@ const File: NextPage = () => {
     { enabled: false }
   );
 
-  const keyPomPrompt = api.keypom.createAudit.useQuery(
-    {
-      githubName: repo,
-      auditDescription: audit,
-    },
-    { enabled: false }
-  );
-
   const handleClick = async () => {
     setLoading(true);
     setRepoFile(file);
-    await openAIPrompt
-      .refetch()
-      .then((res) => {
-        setAudit(res.data || "");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    await keyPomPrompt.refetch().catch((err) => {
+      console.log(err);
+    });
     console.log("audit: ", audit);
     setLoading(false);
   };
@@ -109,7 +105,7 @@ const File: NextPage = () => {
             Click me to Run ChatGPT!
           </button>
           {loading && <div>Loading...</div>}
-          {openAIPrompt.data && <div>{openAIPrompt.data}</div>}
+          {keyPomPrompt.data && <div>{keyPomPrompt.data}</div>}
           <h1>
             Viewing {username} / {repo} / {path}
           </h1>
