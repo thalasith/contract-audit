@@ -61,15 +61,6 @@ const File: NextPage = () => {
     }
   }, [router, fileData, isSuccess]);
 
-  // const openAIPrompt = api.repos.getOpenAIPrompt.useQuery(
-  //   {
-  //     username: username,
-  //     repoName: repo,
-  //     path: "/" + path,
-  //   },
-  //   { enabled: false }
-  // );
-
   const keyPomPrompt = api.keypom.createAudit.useQuery(
     {
       username: username,
@@ -79,7 +70,7 @@ const File: NextPage = () => {
     { enabled: false }
   );
 
-  const handleClick = async () => {
+  const handleKeyPom = async () => {
     setLoading(true);
     setRepoFile(file);
     await keyPomPrompt.refetch().catch((err) => {
@@ -87,6 +78,10 @@ const File: NextPage = () => {
     });
     console.log("audit: ", audit);
     setLoading(false);
+  };
+
+  const handleClick = async () => {
+    await handleKeyPom();
   };
 
   return (
