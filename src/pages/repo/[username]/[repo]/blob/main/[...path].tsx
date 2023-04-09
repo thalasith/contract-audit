@@ -80,8 +80,8 @@ const File: NextPage = () => {
     setLoading(false);
   };
 
-  const handleClick = async () => {
-    await handleKeyPom();
+  const handleClick = () => {
+    handleKeyPom();
   };
 
   return (
