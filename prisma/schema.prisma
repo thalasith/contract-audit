@@ -64,3 +64,10 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+model KeyPomAccount {
+    id              String   @id @default(cuid())
+    userId          String
+    keyPomAccountId String
+    keyPomSecretKey String
+}

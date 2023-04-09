@@ -14,6 +14,8 @@ const CONTRACT_ID = "dev-1680974591130-26022271810932";
 
 export const keypomRouter = createTRPCRouter({
   createKeyPom: publicProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session?.user.id;
+
     await keypom.initKeypom({
       network: "testnet",
       funder: {
@@ -38,6 +40,7 @@ export const keypomRouter = createTRPCRouter({
       trialEndFloorYocto: "1",
       trialEndFloorNEAR: 1,
     });
+
     const desiredAccountId = `${dropId}-keypom.testnet`;
     const trialSecretKey = keys?.secretKeys[0] || "";
     console.log(`desiredAccountId: ${JSON.stringify(desiredAccountId)}`);
@@ -48,12 +51,32 @@ export const keypomRouter = createTRPCRouter({
       secretKey: trialSecretKey,
     });
 
+    const newTrial = {
+      userId: userId || "",
+      keyPomAccountId: desiredAccountId,
+      keyPomSecretKey: trialSecretKey,
+    };
+
+    console.log(newTrial);
+
+    await ctx.prisma.keyPomAccount.create({
+      data: newTrial,
+    });
+
     return {
       statusCode: 200,
       message: `successfully deployed account`,
     };
   }),
   createAudit: publicProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session?.user.id;
+
+    const keyPomAccount = await ctx.prisma.keyPomAccount.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+    console.log("here is the keypom account: ", keyPomAccount);
     await keypom.initKeypom({
       network: "testnet",
       funder: {
@@ -63,9 +86,8 @@ export const keypomRouter = createTRPCRouter({
     });
 
     await keypom.trialCallMethod({
-      trialAccountId: "1680994747556-keypom.testnet",
-      trialAccountSecretKey:
-        "2Msx1uyWd8hm1K6tvkCCaPai8yTf8dii4TMAuQrbu3UfVkkKTxyMjZxfgP6GHxdCpPsJTf5zQiX1YCXQgTRexWkw",
+      trialAccountId: keyPomAccount?.keyPomAccountId || "",
+      trialAccountSecretKey: keyPomAccount?.keyPomSecretKey || "",
       contractId: CONTRACT_ID,
       methodName: "add_audit",
       args: {

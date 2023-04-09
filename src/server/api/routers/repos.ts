@@ -16,13 +16,6 @@ const configuration = new OpenAI.Configuration({
 });
 
 export const reposRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
   getRepoFiles: protectedProcedure
     .input(
       z.object({
