@@ -68,38 +68,44 @@ export const keypomRouter = createTRPCRouter({
       message: `successfully deployed account`,
     };
   }),
-  createAudit: publicProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session?.user.id;
+  createAudit: publicProcedure
+    .input(z.object({ auditDescription: z.string(), githubName: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (!input.auditDescription || !input.githubName) {
+        throw new Error("Missing audit description or github name");
+      }
 
-    const keyPomAccount = await ctx.prisma.keyPomAccount.findFirst({
-      where: {
-        userId: userId,
-      },
-    });
-    console.log("here is the keypom account: ", keyPomAccount);
-    await keypom.initKeypom({
-      network: "testnet",
-      funder: {
-        accountId: env.FUNDING_ACCOUNT_ID,
-        secretKey: env.FUNDING_ACOUNT_PRIVATE_KEY,
-      },
-    });
+      const userId = ctx.session?.user.id;
 
-    await keypom.trialCallMethod({
-      trialAccountId: keyPomAccount?.keyPomAccountId || "",
-      trialAccountSecretKey: keyPomAccount?.keyPomSecretKey || "",
-      contractId: CONTRACT_ID,
-      methodName: "add_audit",
-      args: {
-        github_name: "testing keypom",
-        audit_description: "testing keypom description",
-      },
-      attachedDeposit: parseNearAmount("0") || "0",
-      attachedGas: "30000000000000",
-    });
-    return {
-      statusCode: 200,
-      message: `successfully deployed account`,
-    };
-  }),
+      const keyPomAccount = await ctx.prisma.keyPomAccount.findFirst({
+        where: {
+          userId: userId,
+        },
+      });
+      console.log("here is the keypom account: ", keyPomAccount);
+      await keypom.initKeypom({
+        network: "testnet",
+        funder: {
+          accountId: env.FUNDING_ACCOUNT_ID,
+          secretKey: env.FUNDING_ACOUNT_PRIVATE_KEY,
+        },
+      });
+
+      await keypom.trialCallMethod({
+        trialAccountId: keyPomAccount?.keyPomAccountId || "",
+        trialAccountSecretKey: keyPomAccount?.keyPomSecretKey || "",
+        contractId: CONTRACT_ID,
+        methodName: "add_audit",
+        args: {
+          github_name: input.githubName,
+          audit_description: input.auditDescription,
+        },
+        attachedDeposit: parseNearAmount("0") || "0",
+        attachedGas: "30000000000000",
+      });
+      return {
+        statusCode: 200,
+        message: `successfully deployed account`,
+      };
+    }),
 });

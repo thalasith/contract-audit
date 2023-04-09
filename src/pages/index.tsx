@@ -7,28 +7,6 @@ import { api } from "~/utils/api";
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
-  // const handleKeyPomGenerate = async () => {
-  //   await keypom.initKeypom({
-  //     network: "testnet",
-  //     funder: {
-  //       accountId: "benji_demo.testnet",
-  //       secretKey:
-  //         "ed25519:5yARProkcALbxaSQ66aYZMSBPWL9uPBmkoQGjV3oi2ddQDMh1teMAbz7jqNV9oVyMy7kZNREjYvWPqjcA6LW9Jb1",
-  //     },
-  //   });
-  //   const { publicKeys, secretKeys } = await keypom.generateKeys({
-  //     numKeys: 1,
-  //   });
-  //   console.log("publicKeys", publicKeys);
-  //   console.log("secretKeys", secretKeys);
-  //   await keypom.createDrop({ publicKeys, depositPerUseNEAR: 1 });
-  //   await keypom.claim({
-  //     secretKey: secretKeys[0],
-  //     newAccountId: "dkfjasdlfkjwefwe.testnet",
-  //     newPublicKey: publicKeys[0],
-  //   });
-  // };
-
   return (
     <>
       <Head>

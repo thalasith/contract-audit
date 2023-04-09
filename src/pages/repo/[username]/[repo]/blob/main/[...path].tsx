@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useEffect, useState, CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import { SyntaxHighlighterProps } from "react-syntax-highlighter";
 import { api } from "~/utils/api";
 
@@ -37,6 +37,8 @@ const File: NextPage = () => {
   const [path, setPath] = useState<string>("");
   const [file, setFile] = useState<string>("");
   const [repoFile, setRepoFile] = useState<string>("");
+  const [audit, setAudit] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const { data: fileData, isSuccess } = api.repos.getFile.useQuery({
     username: username,
     repoName: repo,
@@ -59,16 +61,36 @@ const File: NextPage = () => {
     }
   }, [router, fileData, isSuccess]);
 
-  const openAIPrompt = api.repos.getOpenAIPrompt.useQuery({
-    username: username,
-    repoName: repo,
-    path: "/" + path,
-  });
-  const handleClick = () => {
+  const openAIPrompt = api.repos.getOpenAIPrompt.useQuery(
+    {
+      username: username,
+      repoName: repo,
+      path: "/" + path,
+    },
+    { enabled: false }
+  );
+
+  const keyPomPrompt = api.keypom.createAudit.useQuery(
+    {
+      githubName: repo,
+      auditDescription: audit,
+    },
+    { enabled: false }
+  );
+
+  const handleClick = async () => {
+    setLoading(true);
     setRepoFile(file);
-    openAIPrompt.refetch().catch((err) => {
-      console.log(err);
-    });
+    await openAIPrompt
+      .refetch()
+      .then((res) => {
+        setAudit(res.data || "");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    console.log("audit: ", audit);
+    setLoading(false);
   };
 
   return (
@@ -86,7 +108,8 @@ const File: NextPage = () => {
           >
             Click me to Run ChatGPT!
           </button>
-          {openAIPrompt.data && <div>{openAIPrompt.data}</div>}4
+          {loading && <div>Loading...</div>}
+          {openAIPrompt.data && <div>{openAIPrompt.data}</div>}
           <h1>
             Viewing {username} / {repo} / {path}
           </h1>
