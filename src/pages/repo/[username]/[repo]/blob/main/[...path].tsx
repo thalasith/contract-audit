@@ -81,7 +81,7 @@ const File: NextPage = () => {
   };
 
   const handleClick = () => {
-    handleKeyPom();
+    void handleKeyPom();
   };
 
   return (
