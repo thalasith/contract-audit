@@ -5,7 +5,11 @@ import { env } from "~/env.mjs";
 import path from "path";
 import fs from "fs";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { parseNearAmount } from "near-api-js/lib/utils/format";
+import {
+  parseNearAmount,
+  formatNearAmount,
+} from "near-api-js/lib/utils/format";
+import * as nearAPI from "near-api-js";
 import * as OpenAI from "openai";
 
 const configuration = new OpenAI.Configuration({
@@ -15,8 +19,70 @@ const configuration = new OpenAI.Configuration({
 const CONTRACT_ID = "dev-1680974591130-26022271810932";
 
 export const keypomRouter = createTRPCRouter({
+  getKeyPom: publicProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session?.user.id;
+
+    const keyPomAccount = await ctx.prisma.keyPomAccount.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+
+    const config = {
+      networkId: "testnet",
+      nodeUrl: "https://rpc.testnet.near.org",
+      contractName: "dev-1680974591130-26022271810932",
+      walletUrl: "https://wallet.testnet.near.org",
+      helperUrl: "https://helper.testnet.near.org",
+    };
+
+    const near = await nearAPI.connect({
+      keyStore: new nearAPI.keyStores.InMemoryKeyStore(),
+      ...config,
+    });
+
+    if (!keyPomAccount) {
+      return;
+    }
+    const account = await near.account(keyPomAccount?.keyPomAccountId || "");
+    // parse near amount
+
+    const balance = await account.getAccountBalance();
+
+    return formatNearAmount(balance.available);
+  }),
+  getKeyPomAccountBalance: publicProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session?.user.id;
+
+    const keyPomAccount = await ctx.prisma.keyPomAccount.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+
+    if (!keyPomAccount) {
+      return;
+    }
+
+    const balance = await keypom.getKeyBalance({
+      secretKey: keyPomAccount.keyPomSecretKey,
+    });
+    return balance;
+  }),
   createKeyPom: publicProcedure.query(async ({ ctx }) => {
     const userId = ctx.session?.user.id;
+
+    const keyPomAccount = await ctx.prisma.keyPomAccount.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+    if (keyPomAccount) {
+      return {
+        statusCode: 200,
+        message: `account already exists`,
+      };
+    }
 
     await keypom.initKeypom({
       network: "testnet",
@@ -45,6 +111,7 @@ export const keypomRouter = createTRPCRouter({
 
     const desiredAccountId = `${dropId}-keypom.testnet`;
     const trialSecretKey = keys?.secretKeys[0] || "";
+    // const trialPublickey = keys?.publicKeys[0] || "";
     console.log(`desiredAccountId: ${JSON.stringify(desiredAccountId)}`);
     console.log(`trialSecretKey: ${JSON.stringify(trialSecretKey)}`);
 
