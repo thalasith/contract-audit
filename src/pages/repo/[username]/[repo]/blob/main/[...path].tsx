@@ -76,7 +76,7 @@ const File: NextPage = () => {
     await keyPomPrompt.refetch().catch((err) => {
       console.log(err);
     });
-    console.log("audit: ", audit);
+
     setLoading(false);
   };
 

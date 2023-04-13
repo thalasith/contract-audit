@@ -37,6 +37,7 @@ const Container: React.FC = () => {
   const { data: repoData } = api.repos.getRepos.useQuery(undefined, {
     enabled: sessionData?.user !== undefined,
   });
+  console.log(repoData);
   const [loading, setLoading] = useState<boolean>(false);
 
   const { data: keyPomData } = api.keypom.getKeyPom.useQuery(undefined, {
@@ -58,16 +59,27 @@ const Container: React.FC = () => {
     void handleCreateKeyPom();
   };
 
-  console.log("keypom data: ", keyPomData);
-
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-2xl ">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
+        {sessionData && <span>You are currently logged in.</span>}
+        <button
+          className="my-2 mx-4 rounded-full bg-gray-500 px-4 py-2 font-semibold text-white no-underline transition hover:bg-gray-800"
+          onClick={sessionData ? () => void signOut() : () => void signIn()}
+        >
+          {sessionData ? "Sign out" : "Sign In"}
+        </button>
         {keyPomData ? (
-          <div>You have claimed a trial account!</div>
+          <div className="rounded bg-blue-400 px-4 py-2">
+            You have claimed a trial account! Now go into one of your repos.
+          </div>
         ) : (
-          <button onClick={handleClick}>Create a trial account</button>
+          <button
+            className="rounded bg-green-400 px-4 py-2 hover:bg-green-600"
+            onClick={handleClick}
+          >
+            Create a trial account
+          </button>
         )}
 
         {/* <p className="py-2 text-2xl font-bold"> Select one of your repos!</p> */}
@@ -82,12 +94,6 @@ const Container: React.FC = () => {
           );
         })}
       </p>
-      <button
-        className="rounded-full bg-gray-500 px-10 py-3 font-semibold text-white no-underline transition hover:bg-gray-800"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign In"}
-      </button>
     </div>
   );
 };

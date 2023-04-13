@@ -79,4 +79,14 @@ impl Contract {
         log!("Current account id: {}");
         self.accounts.get(&account_id).unwrap_or_default()
     }
+
+    pub fn get_audit_by_repo(&self, github_name: String) -> Option<Audit> {
+        let audits = self
+            .accounts
+            .get(&env::signer_account_id())
+            .unwrap_or_default();
+        audits
+            .into_iter()
+            .find(|audit| audit.github_name == github_name)
+    }
 }
