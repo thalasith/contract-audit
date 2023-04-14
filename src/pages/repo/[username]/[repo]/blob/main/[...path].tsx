@@ -70,6 +70,19 @@ const File: NextPage = () => {
     { enabled: false }
   );
 
+  const { data: auditData } = api.keypom.getAudit.useQuery({
+    github_name: repo,
+  });
+
+  type Audit = {
+    github_name: string;
+    audit_description: string;
+  };
+
+  const filteredAudit = auditData?.filter((audit: Audit) => {
+    return audit.github_name === repo;
+  })[0];
+
   const handleKeyPom = async () => {
     setLoading(true);
     setRepoFile(file);
@@ -101,6 +114,16 @@ const File: NextPage = () => {
           </button>
           {loading && <div>Loading...</div>}
           {keyPomPrompt.data && <div>{keyPomPrompt.data}</div>}
+          {filteredAudit && (
+            <div className=" flex flex-col items-center rounded-lg bg-gray-200 p-2 ">
+              <h1 className="py-4 text-4xl">
+                Below is the latest audit for your smart contract:{" "}
+              </h1>
+              <p className="whitespace-pre-line">
+                {filteredAudit.audit_description}
+              </p>
+            </div>
+          )}
           <h1>
             Viewing {username} / {repo} / {path}
           </h1>

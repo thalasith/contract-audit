@@ -81,7 +81,9 @@ export const reposRouter = createTRPCRouter({
 
     const response = await octokit.rest.repos.listForAuthenticatedUser();
     const returnData = [] as RepoData[];
-    response.data.forEach((repo) => {
+    const filteredData = response.data.filter((repo) => repo.private === false);
+    console.log(filteredData);
+    filteredData.forEach((repo) => {
       const dummyData = repo.full_name.split("/");
 
       const data = {

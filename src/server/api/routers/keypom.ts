@@ -12,6 +12,14 @@ import {
 import * as nearAPI from "near-api-js";
 import * as OpenAI from "openai";
 
+import { Contract } from "near-api-js";
+
+export interface AuditContract extends Contract {
+  get_audits_by_account(params: { account_id: string }): Promise<any>;
+  add_audit(): Promise<any>;
+  get_audits_by_github_name(params: { github_name: string }): Promise<any>;
+}
+
 const configuration = new OpenAI.Configuration({
   apiKey: env.OPEN_API_KEY,
 });
@@ -111,9 +119,6 @@ export const keypomRouter = createTRPCRouter({
 
     const desiredAccountId = `${dropId}-keypom.testnet`;
     const trialSecretKey = keys?.secretKeys[0] || "";
-    // const trialPublickey = keys?.publicKeys[0] || "";
-    console.log(`desiredAccountId: ${JSON.stringify(desiredAccountId)}`);
-    console.log(`trialSecretKey: ${JSON.stringify(trialSecretKey)}`);
 
     await keypom.claimTrialAccountDrop({
       desiredAccountId: desiredAccountId,
@@ -125,8 +130,6 @@ export const keypomRouter = createTRPCRouter({
       keyPomAccountId: desiredAccountId,
       keyPomSecretKey: trialSecretKey,
     };
-
-    console.log(newTrial);
 
     await ctx.prisma.keyPomAccount.create({
       data: newTrial,
@@ -225,5 +228,53 @@ export const keypomRouter = createTRPCRouter({
         console.log(error);
         return "Error";
       }
+    }),
+  getAudit: publicProcedure
+    .input(
+      z.object({
+        github_name: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.session?.user.id;
+      console.log("input: ", input);
+
+      const keyPomAccount = await ctx.prisma.keyPomAccount.findFirst({
+        where: {
+          userId: userId,
+        },
+      });
+      if (!keyPomAccount) {
+        return {
+          statusCode: 400,
+          message: `account does not exist`,
+        };
+      }
+
+      const config = {
+        networkId: "testnet",
+        nodeUrl: "https://rpc.testnet.near.org",
+        contractName: "dev-1680974591130-26022271810932",
+        walletUrl: "https://wallet.testnet.near.org",
+        helperUrl: "https://helper.testnet.near.org",
+      };
+
+      const near = await nearAPI.connect({
+        keyStore: new nearAPI.keyStores.InMemoryKeyStore(),
+        ...config,
+      });
+
+      const account = await near.account(keyPomAccount?.keyPomAccountId);
+
+      const contract = new nearAPI.Contract(account, CONTRACT_ID, {
+        viewMethods: ["get_audits_by_account", "get_audits_by_github_name"],
+        changeMethods: ["add_audit"],
+      }) as AuditContract;
+
+      const response = await contract.get_audits_by_account({
+        account_id: keyPomAccount?.keyPomAccountId || "",
+      });
+
+      return response;
     }),
 });
