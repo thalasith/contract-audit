@@ -70,14 +70,13 @@ const File: NextPage = () => {
     { enabled: false }
   );
 
-  const { data: auditData } = api.keypom.getAudit.useQuery({
-    github_name: repo,
-  });
-
   type Audit = {
     github_name: string;
     audit_description: string;
   };
+  const { data: auditData } = api.keypom.getAudit.useQuery({
+    github_name: repo,
+  }) as { data: Audit[] };
 
   const filteredAudit = auditData?.filter((audit: Audit) => {
     return audit.github_name === repo;

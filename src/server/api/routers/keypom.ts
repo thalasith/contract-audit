@@ -274,7 +274,11 @@ export const keypomRouter = createTRPCRouter({
       const response = await contract.get_audits_by_account({
         account_id: keyPomAccount?.keyPomAccountId || "",
       });
+      type Audit = {
+        github_name: string;
+        audit_description: string;
+      };
 
-      return response;
+      return response as Audit[];
     }),
 });
