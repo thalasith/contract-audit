@@ -70,6 +70,11 @@ const File: NextPage = () => {
     { enabled: false }
   );
 
+  const { data: balance } = api.keypom.getKeyPomAccountBalance.useQuery(
+    undefined,
+    {}
+  );
+
   type Audit = {
     github_name: string;
     audit_description: string;
@@ -105,12 +110,16 @@ const File: NextPage = () => {
       </Head>
       <main className="text-grey-500 flex min-h-screen flex-col items-center justify-center text-gray-800">
         <div className="container flex flex-col items-center justify-center gap-2 px-4 py-16">
-          <button
-            className="bg-gray-400 hover:bg-gray-600"
-            onClick={handleClick}
-          >
-            Click me to Run ChatGPT!
-          </button>
+          <h1 className="text-4xl font-bold">KeyPom</h1>
+          <div className="flex flex-row">
+            <div className="px-2">You have {balance} Near. </div>
+            <button
+              className="bg-gray-400 hover:bg-gray-600"
+              onClick={handleClick}
+            >
+              Click me to Run ChatGPT!
+            </button>
+          </div>
           {loading && <div>Loading...</div>}
           {keyPomPrompt.data && <div>{keyPomPrompt.data}</div>}
           {filteredAudit && (

@@ -27,7 +27,7 @@ const configuration = new OpenAI.Configuration({
 const CONTRACT_ID = "dev-1680974591130-26022271810932";
 
 export const keypomRouter = createTRPCRouter({
-  getKeyPom: publicProcedure.query(async ({ ctx }) => {
+  getKeyPomAccountBalance: publicProcedure.query(async ({ ctx }) => {
     const userId = ctx.session?.user.id;
 
     const keyPomAccount = await ctx.prisma.keyPomAccount.findFirst({
@@ -56,26 +56,9 @@ export const keypomRouter = createTRPCRouter({
     // parse near amount
 
     const balance = await account.getAccountBalance();
+    // round to 2 decimal places
 
-    return formatNearAmount(balance.available);
-  }),
-  getKeyPomAccountBalance: publicProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session?.user.id;
-
-    const keyPomAccount = await ctx.prisma.keyPomAccount.findFirst({
-      where: {
-        userId: userId,
-      },
-    });
-
-    if (!keyPomAccount) {
-      return;
-    }
-
-    const balance = await keypom.getKeyBalance({
-      secretKey: keyPomAccount.keyPomSecretKey,
-    });
-    return balance;
+    return formatNearAmount(balance.available, 2);
   }),
   createKeyPom: publicProcedure.query(async ({ ctx }) => {
     const userId = ctx.session?.user.id;

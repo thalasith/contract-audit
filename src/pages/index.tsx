@@ -40,9 +40,12 @@ const Container: React.FC = () => {
   console.log(repoData);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { data: keyPomData } = api.keypom.getKeyPom.useQuery(undefined, {
-    enabled: sessionData?.user !== undefined,
-  });
+  const { data: keyPomData } = api.keypom.getKeyPomAccountBalance.useQuery(
+    undefined,
+    {
+      enabled: sessionData?.user !== undefined,
+    }
+  );
 
   const createKeyPom = api.keypom.createKeyPom.useQuery(undefined, {
     enabled: false,
