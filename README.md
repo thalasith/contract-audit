@@ -1,5 +1,15 @@
 # SmartContract GPT
 
+Here is the demo of the contract auditing (apologies for the bad UI!)
+![](contract_audit.gif)
+
+Here is the screenshot of the audit being stored on chain:
+
+![](audit_screenshot.png)
+
+Here is the demo of creating the trial account, it being stored on a SQL database and the actual trial account being created on testnet! So cool!
+![](trial_account.gif)
+
 This is a proof of concept project for an automated smart contract auditing service powered by ChatGPT.
 
 I leveraged KeyPom technology to implement trial accounts. I give users a limited amount of NEAR to try out audits and to store each audit logs on the blockchain.
