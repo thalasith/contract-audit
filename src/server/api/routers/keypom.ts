@@ -24,7 +24,7 @@ const configuration = new OpenAI.Configuration({
   apiKey: env.OPEN_API_KEY,
 });
 
-const CONTRACT_ID = "dev-1680974591130-26022271810932";
+const CONTRACT_ID = "dev-1682295617698-65147447957050";
 
 export const keypomRouter = createTRPCRouter({
   getKeyPomAccountBalance: publicProcedure.query(async ({ ctx }) => {
@@ -200,7 +200,7 @@ export const keypomRouter = createTRPCRouter({
               github_name: input.repoName,
               audit_description: completion.data.choices[0].message.content,
             },
-            attachedDeposit: parseNearAmount("1") || "1",
+            attachedDeposit: parseNearAmount("5") || "5",
             attachedGas: "30000000000000",
           });
           return completion.data.choices[0].message.content;
