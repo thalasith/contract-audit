@@ -48,7 +48,7 @@ impl Contract {
     }
     #[payable]
     pub fn add_audit(&mut self, github_name: String, audit_description: String) {
-        assert!(env::attached_deposit() > 0, "Deposit must be more than 0");
+        assert!(env::attached_deposit() > 5, "Deposit must be more than 5");
         log!("Deposit: {:?}", env::attached_deposit());
 
         let id = self.accounts.len() as u64;
