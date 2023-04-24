@@ -72,7 +72,9 @@ const Container: React.FC = () => {
         >
           {sessionData ? "Sign out" : "Sign In"}
         </button>
-        {keyPomData ? (
+        {!sessionData ? (
+          ""
+        ) : keyPomData ? (
           <div className="rounded bg-blue-400 px-4 py-2">
             You have claimed a trial account! Now go into one of your repos.
           </div>
