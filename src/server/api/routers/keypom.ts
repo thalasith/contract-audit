@@ -200,7 +200,7 @@ export const keypomRouter = createTRPCRouter({
               github_name: input.repoName,
               audit_description: completion.data.choices[0].message.content,
             },
-            attachedDeposit: parseNearAmount("0") || "0",
+            attachedDeposit: parseNearAmount("1") || "1",
             attachedGas: "30000000000000",
           });
           return completion.data.choices[0].message.content;
