@@ -37,7 +37,6 @@ const Container: React.FC = () => {
   const { data: repoData } = api.repos.getRepos.useQuery(undefined, {
     enabled: sessionData?.user !== undefined,
   });
-  console.log(repoData);
   const [loading, setLoading] = useState<boolean>(false);
 
   const { data: keyPomData } = api.keypom.getKeyPomAccountBalance.useQuery(
@@ -50,6 +49,8 @@ const Container: React.FC = () => {
   const createKeyPom = api.keypom.createKeyPom.useQuery(undefined, {
     enabled: false,
   });
+
+  const { data: keyPomBalance } = api.keypom.getKeyPomAccountBalance.useQuery();
 
   const handleCreateKeyPom = async () => {
     await createKeyPom.refetch().catch((err) => {
@@ -65,7 +66,11 @@ const Container: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-2xl ">
-        {sessionData && <span>You are currently logged in.</span>}
+        {sessionData && (
+          <span>
+            You are currently logged in to GitHub. Below are all your repos:
+          </span>
+        )}
         <button
           className="my-2 mx-4 rounded-full bg-gray-500 px-4 py-2 font-semibold text-white no-underline transition hover:bg-gray-800"
           onClick={sessionData ? () => void signOut() : () => void signIn()}
@@ -76,7 +81,8 @@ const Container: React.FC = () => {
           ""
         ) : keyPomData ? (
           <div className="rounded bg-blue-400 px-4 py-2">
-            You have claimed a trial account! Now go into one of your repos.
+            You have claimed a trial account and you have {keyPomBalance} Near!
+            Now go into your contract to get an audit!
           </div>
         ) : (
           <button

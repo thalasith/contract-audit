@@ -92,10 +92,10 @@ export const keypomRouter = createTRPCRouter({
         ),
       ],
       maxAttachableYoctoPerContract: ["1"],
-      startingBalanceNEAR: 5,
+      startingBalanceNEAR: 6,
       callableContracts: callableContracts,
       callableMethods: ["*"],
-      maxAttachableNEARPerContract: [1],
+      maxAttachableNEARPerContract: [10],
       trialEndFloorYocto: "1",
       trialEndFloorNEAR: 1,
     });
